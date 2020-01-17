@@ -1,0 +1,75 @@
+version: '3.7'
+services:
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=carInfo
+    networks:
+      - springcloud
+    ports:
+      - "27017-27019:27017-27019"
+
+
+  config-server:
+    image: config-server:v1
+    ports:
+      - "8888:8888"
+    networks: 
+      - springcloud
+  eureka-server:
+    image: eureka-server:v1
+    ports:
+      - "8761:8761"
+    networks: 
+      - springcloud
+      
+  client-to-producer-messages:
+    image: eureka-client:v1
+    ports:
+      - "9000:9000"
+    networks: 
+      - springcloud
+    depends_on:
+      - eureka-server
+      
+  zuul-proxy:
+    image: zuul-service:v1
+    ports:
+      - "8181:8181"
+    networks: 
+      - springcloud
+    depends_on:
+      - eureka-server
+  sim-service:
+    image: sim-service:v1
+    networks: 
+      - springcloud
+    depends_on:
+      - eureka-server
+      
+  consumer-client:
+    image: consumer-client:v1
+    networks: 
+      - springcloud
+    depends_on:
+      - eureka-server
+      - mongo
+      
+  zipkin-server:
+    image: zipkin-server:v1
+    ports:
+      - "9411:9411"
+    networks:
+      - springcloud
+    depends_on: 
+      - microservicios-rabbitmq38
+      
+  microservicios-rabbitmq38:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - springcloud
+networks:
+  springcloud:

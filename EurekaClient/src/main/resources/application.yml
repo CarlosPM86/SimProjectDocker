@@ -1,0 +1,81 @@
+server:
+  port: 9000
+  
+spring:
+  application:
+    name: client-to-producer-messages
+  zipkin:
+    service:
+      name: client-to-producer-messages
+    baseUrl: http://zipkin-server:9411
+    sender:
+      type: web
+    sampler:
+      probability: 1.0
+    enabled: true
+    http:
+      url: http://zipkin-server:9411
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0
+      percentage: 1.0
+    annotation:
+      enabled: true
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+           timeoutInMilliseconds: 10000
+        timeout:
+          enabled: false
+
+eureka:
+  instance:
+   leaseRenewalIntervalInSeconds: 1
+   leaseExpirationDurationInSeconds: 2
+   instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    serviceUrl:
+      defaultZone: http://admin:admin@eureka-server:8761/eureka/
+      #,http://my-eureka-server-valencia.com:9002/eureka/,http://my-eureka-server-bilbao.com:9003/eureka/,http://my-eureka-server-barcelona.com:9001/eureka/
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+
+ribbon:
+  ReadTimeout:60000
+
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream,turbine.stream,*
+    
+
+
+endpoints:
+  health:
+   sensitive:*
+   
+
+turbine:
+  aggregator:
+    clusterConfig: SIM-SERVICE
+    appConfig: SIM-SERVICE   
+    
+logging:
+  path: C:\EUREKA\logs\eurekaClient
+  level:
+    root: INFO
+  pattern:
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [${spring.application.name},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-}] %m%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [${spring.application.name},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-}] %m%n'
+  file: ${logging.path}/
+  config: classpath:logback-spring.xml
