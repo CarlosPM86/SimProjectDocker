@@ -1,0 +1,134 @@
+server:
+  port: 8761
+  
+spring:
+  profiles: madrid
+  application:
+    name: eureka-server-clustered
+  security:
+    basic:
+      enabled: true
+    user:
+      name: admin
+      password: admin
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    healthcheck:
+     enabled:true
+  instance:
+    hostname: my-eureka-server.com
+    serviceUrl:
+      defaultZone: http://admin:admin@${eureka.instance.hostname}:${server.port}/eureka/
+      statusPageUrlPath: ${eureka.instance.hostname}/info
+      healthCheckUrlPath: ${eureka.instance.hostname}/health
+   
+  renewalPercentThreshold: [0.0, 1.0]
+
+logging:
+  path: C:\EUREKA\logs\madrid
+  level:
+    root: INFO
+  pattern:
+    file: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+    console: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+  file: ${logging.path}/
+  config: classpath:logback-spring.xml  
+---  
+
+  
+  
+server:
+  port: 9001
+  
+spring:
+  profiles: barcelona
+  application:
+    name: eureka-server-clustered 
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    healthcheck:
+     enabled: true
+  instance:
+    hostname: my-eureka-server-barcelona.com
+    serviceUrl:
+      defaultZone: http://my-eureka-server-valencia.com:9002/eureka/,http://my-eureka-server-bilbao.com:9003/eureka/
+  renewalPercentThreshold: [0.0, 1.0]
+  
+  
+logging:
+  path: C:\EUREKA\logs\barcelona
+  level:
+    root: INFO
+  pattern:
+    file: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+    console: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+  file: ${logging.path}/
+  config: classpath:logback-spring.xml  
+---  
+  
+server:
+  port: 9002
+  
+spring:
+  profiles: valencia
+  application:
+    name: eureka-server-clustered 
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    healthcheck:
+     enabled:true
+  instance:
+    hostname: my-eureka-server-valencia.com
+    serviceUrl:
+      defaultZone: http://my-eureka-server-barcelona.com:9001/eureka/,http://my-eureka-server-bilbao.com:9003/eureka/
+  renewalPercentThreshold: [0.0, 1.0]
+
+logging:
+  path: C:\EUREKA\logs\valencia
+  level:
+    root: INFO
+  pattern:
+    file: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+    console: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+  file: ${logging.path}/
+  config: classpath:logback-spring.xml   
+---
+  
+server:
+  port: 9003
+  
+spring:
+  profiles: bilbao
+  application:
+    name: eureka-server-clustered 
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    healthcheck:
+     enabled:true
+  instance:
+    hostname: my-eureka-server-bilbao.com
+    serviceUrl:
+      defaultZone: http://my-eureka-server-barcelona.com:9001/eureka/,http://my-eureka-server-valencia.com:9002/eureka/
+  renewalPercentThreshold: [0.0, 1.0]
+
+logging:
+  path: C:\EUREKA\logs\bilbao
+  level:
+    root: INFO
+  pattern:
+    file: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+    console: '%-30(%d{dd-MM-YYYY HH:mm:ss.SSS} [%thread]) || %-5level || %logger{32}:%L - %msg%n'
+  file: ${logging.path}/
+  config: classpath:logback-spring.xml 
